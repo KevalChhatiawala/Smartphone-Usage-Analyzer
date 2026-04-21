@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Smartphone Usage Analyzer</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ADMIN HEADER -->
+    <header class="header admin-header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🛡️</span>
+                <h1>Admin Dashboard</h1>
+                <span class="badge badge-admin">ADMIN</span>
+            </div>
+            <nav>
+                <a href="#overview" class="nav-link active">Overview</a>
+                <a href="#users" class="nav-link">Users</a>
+                <a href="#all-predictions" class="nav-link">Predictions</a>
+                <a href="#security" class="nav-link">Security</a>
+                <a href="/" class="nav-link">← App</a>
+                <a href="/logout" class="nav-link nav-logout">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ADMIN WELCOME -->
+    <section class="hero admin-hero">
+        <div class="container">
+            <h2 class="hero-title" id="adminWelcome">Welcome, Admin</h2>
+            <p class="hero-subtitle">Manage users, monitor predictions, and control the system</p>
+
+            <div class="hero-stats" id="adminHeroStats">
+                <div class="stat-card">
+                    <span class="stat-number" id="statTotalUsers">0</span>
+                    <span class="stat-label">Total Users</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="statActiveUsers">0</span>
+                    <span class="stat-label">Active Users</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="statTotalPredictions">0</span>
+                    <span class="stat-label">Total Predictions</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="statTodayPredictions">0</span>
+                    <span class="stat-label">Today's Predictions</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="statRecentSignups">0</span>
+                    <span class="stat-label">New Users (7d)</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="statFailedLogins">0</span>
+                    <span class="stat-label">Failed Logins Today</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- OVERVIEW -->
+    <section id="overview" class="section">
+        <div class="container">
+            <h2 class="section-title">📊 System Overview</h2>
+            <div class="charts-grid">
+                <div class="card chart-card">
+                    <h3 class="card-title">⚠️ Risk Distribution (All Users)</h3>
+                    <canvas id="adminRiskChart"></canvas>
+                </div>
+                <div class="card chart-card">
+                    <h3 class="card-title">🏆 Top Users by Predictions</h3>
+                    <canvas id="topUsersChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- USERS MANAGEMENT -->
+    <section id="users" class="section section-dark">
+        <div class="container">
+            <h2 class="section-title">👥 User Management</h2>
+            <p class="section-desc">Manage all registered users</p>
+
+            <div class="history-controls">
+                <button class="btn btn-secondary" onclick="loadUsers()">🔄 Refresh</button>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Predictions</th>
+                            <th>Joined</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersBody">
+                        <tr>
+                            <td colspan="10" class="empty-row">Loading users...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ALL PREDICTIONS -->
+    <section id="all-predictions" class="section">
+        <div class="container">
+            <h2 class="section-title">📜 All Predictions</h2>
+            <p class="section-desc">View predictions from all users</p>
+
+            <div class="history-controls">
+                <button class="btn btn-secondary" onclick="loadAllPredictions()">🔄 Refresh</button>
+                <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>User</th>
+                            <th>Date</th>
+                            <th>Prediction</th>
+                            <th>Risk Level</th>
+                            <th>Score</th>
+                            <th>Model</th>
+                        </tr>
+                    </thead>
+                    <tbody id="allPredictionsBody">
+                        <tr>
+                            <td colspan="7" class="empty-row">Loading predictions...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECURITY -->
+    <section id="security" class="section section-dark">
+        <div class="container">
+            <h2 class="section-title">🔒 Security Log</h2>
+            <p class="section-desc">Recent login attempts</p>
+
+            <div class="history-controls">
+                <button class="btn btn-secondary" onclick="loadLoginAttempts()">🔄 Refresh</button>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Username</th>
+                            <th>IP Address</th>
+                            <th>Status</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="loginAttemptsBody">
+                        <tr>
+                            <td colspan="5" class="empty-row">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <p>🛡️ Admin Dashboard • Smartphone Usage Analyzer</p>
+            <p class="footer-sub">Admins: keval, nisarg</p>
+        </div>
+    </footer>
+
+    <!-- TOAST -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ============ ADMIN JAVASCRIPT ============
+        let chartInstances = {};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAdminData();
+            initNavigation();
+        });
+
+        function initNavigation() {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    if (!this.classList.contains('nav-logout')) {
+                        this.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const icons = { success: '✅', error: '❌', warning: '⚠️' };
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <span class="toast-icon">${icons[type] || '📌'}</span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => { if (toast.parentElement) toast.remove(); }, 4000);
+        }
+
+        async function loadAdminData() {
+            // Load admin name
+            try {
+                const meRes = await fetch('/api/auth/me');
+                const meData = await meRes.json();
+                if (meData.success) {
+                    document.getElementById('adminWelcome').textContent =
+                        `Welcome, ${meData.user.full_name}`;
+                }
+            } catch(e) {}
+
+            // Load stats
+            try {
+                const res = await fetch('/api/admin/stats');
+                const data = await res.json();
+                if (data.success) {
+                    const s = data.stats;
+                    document.getElementById('statTotalUsers').textContent = s.total_users;
+                    document.getElementById('statActiveUsers').textContent = s.active_users;
+                    document.getElementById('statTotalPredictions').textContent = s.total_predictions;
+                    document.getElementById('statTodayPredictions').textContent = s.today_predictions;
+                    document.getElementById('statRecentSignups').textContent = s.recent_signups;
+                    document.getElementById('statFailedLogins').textContent = s.failed_logins_today;
+
+                    // Risk chart
+                    renderAdminRiskChart(s.risk_distribution);
+                    renderTopUsersChart(s.top_users);
+                }
+            } catch(e) { console.error(e); }
+
+            loadUsers();
+            loadAllPredictions();
+            loadLoginAttempts();
+        }
+
+        function renderAdminRiskChart(riskDist) {
+            const ctx = document.getElementById('adminRiskChart').getContext('2d');
+            if (chartInstances['adminRisk']) chartInstances['adminRisk'].destroy();
+
+            const labels = Object.keys(riskDist).length > 0 ? Object.keys(riskDist) : ['No Data'];
+            const values = Object.keys(riskDist).length > 0 ? Object.values(riskDist) : [0];
+            const colorMap = {
+                'High Risk': 'rgba(231,76,60,0.8)',
+                'Medium Risk': 'rgba(243,156,18,0.8)',
+                'Low Risk': 'rgba(39,174,96,0.8)'
+            };
+            const colors = labels.map(l => colorMap[l] || 'rgba(108,92,231,0.8)');
+
+            chartInstances['adminRisk'] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{ data: values, backgroundColor: colors, borderColor: '#222244', borderWidth: 3 }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom', labels: { color: '#a0a0cc', usePointStyle: true } } }
+                }
+            });
+        }
+
+        function renderTopUsersChart(topUsers) {
+            const ctx = document.getElementById('topUsersChart').getContext('2d');
+            if (chartInstances['topUsers']) chartInstances['topUsers'].destroy();
+
+            if (!topUsers || topUsers.length === 0) {
+                topUsers = [{ username: 'No Data', predictions: 0 }];
+            }
+
+            chartInstances['topUsers'] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: topUsers.map(u => u.username),
+                    datasets: [{
+                        label: 'Predictions',
+                        data: topUsers.map(u => u.predictions),
+                        backgroundColor: 'rgba(108,92,231,0.6)',
+                        borderColor: '#6c5ce7',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, ticks: { color: '#a0a0cc' }, grid: { color: 'rgba(51,51,102,0.3)' } },
+                        y: { ticks: { color: '#a0a0cc' }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/admin/users');
+                const data = await res.json();
+                const tbody = document.getElementById('usersBody');
+
+                if (data.success && data.users.length > 0) {
+                    tbody.innerHTML = data.users.map(user => {
+                        const isAdmin = user.role === 'admin';
+                        const statusClass = user.is_active ? 'risk-low' : 'risk-high';
+                        const statusText = user.is_active ? 'Active' : 'Inactive';
+                        const joined = new Date(user.created_at).toLocaleDateString();
+                        const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Never';
+
+                        return `<tr>
+                            <td>${user.id}</td>
+                            <td><strong>${user.username}</strong></td>
+                            <td>${user.full_name}</td>
+                            <td>${user.email}</td>
+                            <td><span class="risk-badge ${isAdmin ? 'risk-high' : 'risk-low'}">${user.role.toUpperCase()}</span></td>
+                            <td><span class="risk-badge ${statusClass}">${statusText}</span></td>
+                            <td>${user.total_predictions}</td>
+                            <td>${joined}</td>
+                            <td>${lastLogin}</td>
+                            <td>
+                                ${!isAdmin ? `
+                                    <button class="btn btn-secondary" style="padding:4px 10px;font-size:0.8rem;margin:2px;"
+                                            onclick="toggleUser(${user.id})">
+                                        ${user.is_active ? '🚫 Disable' : '✅ Enable'}
+                                    </button>
+                                    <button class="btn btn-danger" style="padding:4px 10px;font-size:0.8rem;margin:2px;"
+                                            onclick="deleteUser(${user.id}, '${user.username}')">
+                                        🗑️ Delete
+                                    </button>
+                                ` : '<span style="color:var(--text-muted)">Protected</span>'}
+                            </td>
+                        </tr>`;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="10" class="empty-row">No users found</td></tr>';
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        async function toggleUser(userId) {
+            try {
+                const res = await fetch(`/api/admin/users/${userId}/toggle`, { method: 'POST' });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                loadUsers();
+            } catch(e) {
+                showToast('Error toggling user', 'error');
+            }
+        }
+
+        async function deleteUser(userId, username) {
+            if (!confirm(`Are you sure you want to delete user "${username}"? This cannot be undone.`)) return;
+            try {
+                const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                loadUsers();
+                loadAdminData();
+            } catch(e) {
+                showToast('Error deleting user', 'error');
+            }
+        }
+
+        async function loadAllPredictions() {
+            try {
+                const res = await fetch('/api/admin/predictions?limit=100');
+                const data = await res.json();
+                const tbody = document.getElementById('allPredictionsBody');
+
+                if (data.success && data.predictions.length > 0) {
+                    tbody.innerHTML = data.predictions.map((p, i) => {
+                        const date = new Date(p.timestamp).toLocaleString();
+                        const riskClass = p.risk_level.toLowerCase().includes('high') ? 'risk-high' :
+                                          p.risk_level.toLowerCase().includes('medium') ? 'risk-medium' : 'risk-low';
+                        return `<tr>
+                            <td>${data.predictions.length - i}</td>
+                            <td><strong>${p.username}</strong><br><small>${p.full_name}</small></td>
+                            <td>${date}</td>
+                            <td>${p.prediction}</td>
+                            <td><span class="risk-badge ${riskClass}">${p.risk_level}</span></td>
+                            <td>${p.risk_score.toFixed(1)}%</td>
+                            <td>${p.model_name || '-'}</td>
+                        </tr>`;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7" class="empty-row">No predictions yet</td></tr>';
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        async function loadLoginAttempts() {
+            try {
+                const res = await fetch('/api/admin/login-attempts');
+                const data = await res.json();
+                const tbody = document.getElementById('loginAttemptsBody');
+
+                if (data.success && data.attempts.length > 0) {
+                    tbody.innerHTML = data.attempts.map((a, i) => {
+                        const time = new Date(a.attempted_at).toLocaleString();
+                        const statusClass = a.success ? 'risk-low' : 'risk-high';
+                        const statusText = a.success ? '✅ Success' : '❌ Failed';
+                        return `<tr>
+                            <td>${data.attempts.length - i}</td>
+                            <td><strong>${a.username}</strong></td>
+                            <td>${a.ip_address || '-'}</td>
+                            <td><span class="risk-badge ${statusClass}">${statusText}</span></td>
+                            <td>${time}</td>
+                        </tr>`;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-row">No login attempts</td></tr>';
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        async function clearAllData() {
+            if (!confirm('⚠️ This will delete ALL predictions and usage history for ALL users. Continue?')) return;
+            if (!confirm('Are you REALLY sure? This cannot be undone!')) return;
+
+            try {
+                const res = await fetch('/api/admin/clear-all', { method: 'DELETE' });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                loadAdminData();
+            } catch(e) {
+                showToast('Error clearing data', 'error');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📱 Smartphone Usage Analyzer</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- HEADER WITH USER INFO -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">📱</span>
+                <h1>Smartphone Usage Analyzer</h1>
+                <span class="badge">AI Powered</span>
+            </div>
+            <nav>
+                <a href="#analyzer" class="nav-link active">Analyzer</a>
+                <a href="#dashboard" class="nav-link">Dashboard</a>
+                <a href="#history" class="nav-link">History</a>
+                <a href="#train" class="nav-link">Train Model</a>
+                <div class="user-menu" id="userMenu">
+                    <span class="user-avatar" id="userAvatar">👤</span>
+                    <span class="user-name" id="userName">User</span>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="#" id="profileLink">📋 My Profile</a>
+                        <a href="/admin" id="adminLink" style="display:none;">🛡️ Admin Panel</a>
+                        <a href="/logout">🚪 Logout</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <h2 class="hero-title">Analyze Your Smartphone Addiction</h2>
+            <p class="hero-subtitle">Powered by Machine Learning • Get personalized insights & suggestions</p>
+            <div class="hero-stats" id="heroStats">
+                <div class="stat-card">
+                    <span class="stat-number" id="totalPredictions">0</span>
+                    <span class="stat-label">Your Analyses</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="avgRisk">0%</span>
+                    <span class="stat-label">Avg Risk Score</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="modelAccuracy">--</span>
+                    <span class="stat-label">Model Accuracy</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ANALYZER -->
+    <section id="analyzer" class="section">
+        <div class="container">
+            <h2 class="section-title">📊 Usage Analyzer</h2>
+            <p class="section-desc">Enter your daily smartphone usage data below</p>
+
+            <div class="analyzer-grid">
+                <div class="card form-card">
+                    <h3 class="card-title">📝 Your Daily Usage</h3>
+                    <form id="usageForm">
+                        <div id="dynamicFields">
+                            <div class="loading-fields">
+                                <div class="spinner"></div>
+                                <p>Loading form fields...</p>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full" id="analyzeBtn">
+                            <span class="btn-icon">🔍</span>
+                            Analyze My Usage
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card results-card" id="resultsCard" style="display:none;">
+                    <h3 class="card-title">🎯 Analysis Results</h3>
+
+                    <div class="risk-gauge" id="riskGauge">
+                        <div class="gauge-circle" id="gaugeCircle">
+                            <div class="gauge-fill" id="gaugeFill"></div>
+                            <div class="gauge-center">
+                                <span class="gauge-score" id="gaugeScore">0%</span>
+                                <span class="gauge-label" id="gaugeLabel">Risk Score</span>
+                            </div>
+                        </div>
+                        <h4 class="risk-level" id="riskLevel">--</h4>
+                        <p class="prediction-text" id="predictionText"></p>
+                    </div>
+
+                    <div class="chart-container" id="probaChartContainer" style="display:none;">
+                        <canvas id="probaChart"></canvas>
+                    </div>
+
+                    <div class="suggestions-section" id="suggestionsSection" style="display:none;">
+                        <h3 class="card-title">💡 Personalized Suggestions</h3>
+                        <div class="tabs">
+                            <button class="tab active" data-tab="immediate">🚨 Immediate</button>
+                            <button class="tab" data-tab="daily">📅 Daily</button>
+                            <button class="tab" data-tab="longterm">🎯 Long Term</button>
+                            <button class="tab" data-tab="apps">📱 Apps</button>
+                            <button class="tab" data-tab="health">❤️ Health</button>
+                        </div>
+                        <div class="tab-content" id="tabContent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="section section-dark">
+        <div class="container">
+            <h2 class="section-title">📈 Dashboard</h2>
+            <p class="section-desc">Visual insights from your usage history</p>
+            <div class="charts-grid">
+                <div class="card chart-card">
+                    <h3 class="card-title">📊 Screen Time Trend</h3>
+                    <canvas id="screenTimeChart"></canvas>
+                </div>
+                <div class="card chart-card">
+                    <h3 class="card-title">🍩 Usage Distribution</h3>
+                    <canvas id="usageDistChart"></canvas>
+                </div>
+                <div class="card chart-card">
+                    <h3 class="card-title">⚠️ Risk Distribution</h3>
+                    <canvas id="riskDistChart"></canvas>
+                </div>
+                <div class="card chart-card">
+                    <h3 class="card-title">📱 App Opens & Notifications</h3>
+                    <canvas id="activityChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section id="history" class="section">
+        <div class="container">
+            <h2 class="section-title">📜 Prediction History</h2>
+            <p class="section-desc">Your past analysis results</p>
+            <div class="history-controls">
+                <button class="btn btn-secondary" onclick="loadHistory()">🔄 Refresh</button>
+                <button class="btn btn-danger" onclick="clearHistory()">🗑️ Clear My History</button>
+            </div>
+            <div class="table-container">
+                <table class="data-table" id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Date & Time</th>
+                            <th>Prediction</th>
+                            <th>Risk Level</th>
+                            <th>Risk Score</th>
+                            <th>Model</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                        <tr><td colspan="6" class="empty-row">No history yet. Make your first analysis!</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- TRAIN MODEL -->
+    <section id="train" class="section section-dark">
+        <div class="container">
+            <h2 class="section-title">🧠 Train Custom Model</h2>
+            <p class="section-desc">Upload your own dataset to train a custom ML model</p>
+            <div class="train-grid">
+                <div class="card">
+                    <h3 class="card-title">📤 Upload Dataset</h3>
+                    <form id="trainForm" enctype="multipart/form-data">
+                        <div class="upload-area" id="uploadArea">
+                            <span class="upload-icon">📁</span>
+                            <p>Drag & drop your CSV file here</p>
+                            <p class="upload-hint">or click to browse</p>
+                            <input type="file" id="datasetFile" name="dataset" accept=".csv" hidden>
+                            <p class="file-name" id="fileName"></p>
+                        </div>
+                        <div class="form-group">
+                            <label>Target Column (optional)</label>
+                            <input type="text" name="target_column" id="targetColumn" placeholder="e.g., Addiction_Level">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full" id="trainBtn">
+                            <span class="btn-icon">🚀</span> Train Model
+                        </button>
+                    </form>
+                    <div class="training-status" id="trainingStatus" style="display:none;">
+                        <div class="spinner"></div>
+                        <p>Training model...</p>
+                    </div>
+                    <div class="model-results" id="modelResults" style="display:none;">
+                        <h4>✅ Training Complete!</h4>
+                        <div id="modelResultsContent"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">ℹ️ Current Model Info</h3>
+                    <div id="currentModelInfo">
+                        <div class="loading-fields"><div class="spinner"></div><p>Loading...</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- USER PROFILE MODAL -->
+    <div class="modal-overlay" id="profileModal" style="display:none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>👤 My Profile</h3>
+                <button class="modal-close" onclick="closeProfile()">×</button>
+            </div>
+            <div class="modal-body" id="profileContent">
+                Loading...
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <p>📱 Smartphone Usage Analyzer • Built with Flask + ML + Chart.js</p>
+            <p class="footer-sub">Your data stays private • All processing done locally</p>
+        </div>
+    </footer>
+
+    <!-- TOAST -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
