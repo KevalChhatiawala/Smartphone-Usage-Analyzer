@@ -1,0 +1,42 @@
+{
+  "model_name": "Random Forest",
+  "problem_type": "regression",
+  "features": [
+    "Social_Media_Hours",
+    "Gaming_Hours",
+    "Productivity_Hours",
+    "Number_of_App_Opens",
+    "Notifications_Received",
+    "Night_Usage_Times",
+    "Age",
+    "Number_of_Apps_Installed",
+    "Weekly_Avg_Usage_Hours",
+    "Addiction_Level"
+  ],
+  "target": "Daily_Screen_Time_Hours",
+  "results": {
+    "Random Forest": {
+      "r2_score": 0.502,
+      "rmse": 2.9549,
+      "training_time": "0.272s"
+    },
+    "Gradient Boosting": {
+      "r2_score": 0.4681,
+      "rmse": 3.0541,
+      "training_time": "0.567s"
+    },
+    "Linear Regression": {
+      "r2_score": -0.0105,
+      "rmse": 4.2094,
+      "training_time": "0.184s"
+    }
+  },
+  "best_score": 0.502,
+  "total_training_time": "1.154s",
+  "dataset_shape": [
+    1000,
+    11
+  ],
+  "n_estimators": 100,
+  "max_depth": 9
+}
